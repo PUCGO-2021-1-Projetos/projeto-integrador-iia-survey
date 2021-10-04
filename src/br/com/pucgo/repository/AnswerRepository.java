@@ -4,6 +4,7 @@ package br.com.pucgo.repository;
 import java.util.ArrayList;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.ResultSet;
 
@@ -75,9 +76,9 @@ public class AnswerRepository {
 
             question = new Question(questionId, questionText, questionCreated.toString());
 
-            Integer answerId = row.getInt("question_id");
-            String answerText = row.getString("question");
-            Timestamp answerCreated = row.getTimestamp("question_created");
+            Integer answerId = row.getInt("answer_id");
+            String answerText = row.getString("answer");
+            Timestamp answerCreated = row.getTimestamp("answer_created");
 
             item = new Answer(answerId, answerText, answerCreated.toString(), question);
 
@@ -88,5 +89,22 @@ public class AnswerRepository {
         }
 
         return item;
+    }
+
+    public void saveNew(Answer answer) {
+
+        try {
+            String query = "INSERT INTO answer(text, author_id, question_id) values(?, 1, ?)";
+            PreparedStatement pst = this.connection.prepareStatement(query);
+
+            pst.setString(1, answer.getText());
+            pst.setInt(2, answer.getQuestion().getId());
+
+            pst.execute();
+
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
     }
 }
